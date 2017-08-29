@@ -1,0 +1,74 @@
+group 'com.ma'
+version '1.0'
+
+apply plugin: 'application'
+apply plugin: 'java'
+
+sourceCompatibility = 1.8
+//[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+// 全局配置，对所有工程有效
+allprojects {
+    // 全局属性设置
+    ext {
+        junitVersion = "4.11"
+        springVersion = "4.2.4.RELEASE"
+        // java文件编码方式设置为utf-8
+        compileJava.options.encoding = 'UTF-8'
+        compileTestJava.options.encoding = 'UTF-8'
+    }
+}
+
+mainClassName = 'com.ma.generator.GeneratorMain'
+
+repositories {
+    //mavenCentral()
+    maven { url "http://172.31.80.122:8081/nexus/content/groups/public/" }
+}
+
+dependencies {
+    compile(
+            "com.oracle:ojdbc6:11.2.0.1.0",
+            "org.mybatis.generator:mybatis-generator-core:1.3.2",
+            "org.freemarker:freemarker:2.3.23",
+    )
+}
+
+task "create-dirs" << {
+    sourceSets*.java.srcDirs*.each { it.mkdirs() }
+    sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+}
+
+jar {
+    from sourceSets.main.resources
+    exclude('code-generator-config*')
+    exclude('*.properties')
+}
+
+task makeZip(type: Zip, dependsOn: startScripts) {
+    def baseDir = project.name + "-" + project.version
+    def artifacts = new HashSet()
+    project.configurations.runtime.resolvedConfiguration.resolvedArtifacts.each {
+        artifact -> artifacts << artifact.file
+    }
+
+    into("${baseDir}/lib") {
+        from(artifacts)
+        from(project.libsDir)
+    }
+
+    into("${baseDir}/conf") {
+        from(sourceSets.main.output.resourcesDir)
+        include('*.properties')
+        include('code-generator-config.xml')
+    }
+    def scripts = new HashSet()
+    def file = new File(project.buildDir.path + "/scripts");
+    file.listFiles().each {
+        script -> scripts << script
+    }
+
+    into("${baseDir}/bin") {
+        from(scripts)
+    }
+}
+

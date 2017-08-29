@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema
+        xmlns="http://www.modernavenue.com/schema/code/generator"
+        targetNamespace="http://www.modernavenue.com/schema/code/generator"
+        elementFormDefault="qualified"
+        attributeFormDefault="unqualified"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace"/>
+
+    <xsd:annotation>
+        <xsd:documentation>本文档定义code-generator-config.xml的格式</xsd:documentation>
+    </xsd:annotation>
+
+    <xsd:complexType name="propertyType">
+        <xsd:attribute name="name" type="xsd:string" use="required">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[
+	                属性名称
+				]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+        <xsd:attribute name="value" type="xsd:string">
+            <xsd:annotation>
+                <xsd:documentation><![CDATA[
+	                        属性值
+				]]></xsd:documentation>
+            </xsd:annotation>
+        </xsd:attribute>
+    </xsd:complexType>
+
+
+    <xsd:element name="property" type="propertyType">
+        <xsd:annotation>
+            <xsd:documentation><![CDATA[
+                    属性配置
+			]]></xsd:documentation>
+        </xsd:annotation>
+    </xsd:element>
+
+    <xsd:element name="generatorConfiguration">
+        <xsd:complexType mixed="true">
+            <xsd:sequence>
+                <xsd:element name="properties" minOccurs="0">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <![CDATA[ 系统配置 ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element ref="property"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="url" type="xsd:string" use="optional">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    <![CDATA[ 配置文件所在路径 ]]>
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:attribute>
+                        <xsd:attribute name="resource" type="xsd:normalizedString" use="optional">
+                            <xsd:annotation>
+                                <xsd:documentation>
+                                    <![CDATA[ 配置文件所在路径 ]]>
+                                </xsd:documentation>
+                            </xsd:annotation>
+                        </xsd:attribute>
+                        <xsd:anyAttribute namespace="##other" processContents="lax"/>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="classPathEntry" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:simpleContent>
+                            <xsd:extension base="xsd:string">
+                                <xsd:attribute name="location" type="xsd:normalizedString" use="optional">
+                                    <xsd:annotation>
+                                        <xsd:documentation>
+                                            <![CDATA[ 动态加载的jar路径 ]]>
+                                        </xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:attribute>
+                            </xsd:extension>
+                        </xsd:simpleContent>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="jdbcConnection" minOccurs="0">
+                    <xsd:complexType>
+                        <xsd:simpleContent>
+                            <xsd:extension base="xsd:string">
+                                <xsd:attribute name="driverClass" type="xsd:normalizedString"
+                                               use="required"/>
+                                <xsd:attribute name="connectionURL" type="xsd:normalizedString"
+                                               use="required"/>
+                                <xsd:attribute name="userId" type="xsd:normalizedString" use="required"/>
+                                <xsd:attribute name="password" type="xsd:normalizedString" use="required"/>
+                            </xsd:extension>
+                        </xsd:simpleContent>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="project" minOccurs="1" maxOccurs="1">
+                    <xsd:annotation>
+                        <xsd:documentation>
+                            <![CDATA[ 项目信息设置 ]]>
+                        </xsd:documentation>
+                    </xsd:annotation>
+                    <xsd:complexType>
+                        <xsd:simpleContent>
+                            <xsd:extension base="xsd:string">
+                                <xsd:attribute name="targetPackage" type="xsd:normalizedString" use="required">
+                                    <xsd:annotation>
+                                        <xsd:documentation>
+                                            <![CDATA[ 项目包名 ]]>
+                                        </xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:attribute>
+                                <xsd:attribute name="targetProject" type="xsd:normalizedString" use="required">
+                                    <xsd:annotation>
+                                        <xsd:documentation>
+                                            <![CDATA[ 项目路径,绝对路径 ]]>
+                                        </xsd:documentation>
+                                    </xsd:annotation>
+                                </xsd:attribute>
+                            </xsd:extension>
+                        </xsd:simpleContent>
+                    </xsd:complexType>
+                </xsd:element>
+                <xsd:element name="table" minOccurs="0" maxOccurs="unbounded">
+                    <xsd:complexType>
+                        <xsd:sequence>
+                            <xsd:element name="exclude" minOccurs="0">
+                                <xsd:annotation>
+                                    <xsd:documentation>
+                                        <![CDATA[ 要排除的字段（多个用“,”分隔） ]]>
+                                    </xsd:documentation>
+                                </xsd:annotation>
+                                <xsd:complexType>
+                                    <xsd:simpleContent>
+                                        <xsd:extension base="xsd:normalizedString">
+                                            <xsd:attribute name="value" type="xsd:normalizedString" use="optional"/>
+                                        </xsd:extension>
+                                    </xsd:simpleContent>
+                                </xsd:complexType>
+                            </xsd:element>
+                            <xsd:element ref="property" maxOccurs="unbounded" minOccurs="0"/>
+                        </xsd:sequence>
+                        <xsd:attribute name="tableName" type="xsd:normalizedString" use="required"/>
+                        <xsd:attribute name="domainObjectName" type="xsd:normalizedString" use="optional"/>
+                        <xsd:attribute name="module" type="xsd:normalizedString" use="required"/>
+                        <xsd:attribute name="schema" type="xsd:normalizedString" use="optional"/>
+                        <xsd:attribute name="catalog" type="xsd:normalizedString" use="optional"/>
+                        <xsd:attribute name="enable" type="xsd:boolean" use="optional" default="true"/>
+                    </xsd:complexType>
+                </xsd:element>
+            </xsd:sequence>
+        </xsd:complexType>
+    </xsd:element>
+</xsd:schema>
